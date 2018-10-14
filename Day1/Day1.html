@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Scripts/vue.js"></script>
+        <title>Vue day 1</title>
+        <style >
+            .fade-enter-active, .fadebla-leave-active {
+                transition: opacity 1.5s;
+            }
+            .fade-enter, .fadebla-leave-to {
+                opacity: 0;
+            } 
+            
+        </style>
+    </head>
+    <body>
+
+
+        <!-- v:bind:style -->
+        <div id="App-1" v-bind:style="style">
+            {{ message}}
+        </div>
+
+        <!-- v-if -->
+        <div id="AppIf">
+            <!-- transition -->
+            <transition name="fade">
+                <p v-if="show">{{message}}</p>
+            </transition> 
+            <!-- v-on:click -->
+            <!-- @click -->
+            <button @click="show = !show">Click Me</button>
+        </div>
+
+        <!-- v-for -->
+        <div id="App-for">
+            <button @click=add>Add</button>
+            <ol>
+                <li v-for="todo in todos">
+                    {{ todo.text }}
+                </li>
+            </ol>
+        </div>
+
+        <!-- v-model : 双向绑定 -->
+        <div id="App-v-model">
+            <span>{{ message }}</span>
+            <br />
+            <input v-model="message" />
+        </div>
+
+        <!-- Vue.component 模板 -->
+        <div id="App-Component">
+            <ul>
+                <!-- 此处v-bind:todo 用于与父控件交互 -->
+                <todo-item 
+                    v-for = "item in todos"
+                    v-bind:todo = "item" 
+                    v-bind:key = "item.id">  
+                </todo-item>
+            </ul>
+        </div>
+
+        <!-- Vue code below -->
+        <script>
+
+            // 自定義元素
+            Vue.component("todo-item", {
+                props: ['todo'],
+                template: '<li>{{ todo.text }}</li>'
+            });
+
+            var app5 = new Vue({
+                el: "#App-Component",
+                data: function() {
+                    return {
+                        todos: [{
+                                id: 1, 
+                                text: "BB Finish task1."
+                            },{
+                                id: 2, 
+                                text: "BB Finish task2."
+                            },{
+                                id: 3, 
+                                text: "BB Finish task3."
+                            }
+                    ]}
+                }
+            })
+
+            var app4 = new Vue({
+                el: "#App-v-model",
+                data: {
+                    message: "Hello world"
+                }
+            });
+
+            var app3 = new Vue({
+                el: "#App-for",
+                data: function() {
+                    var items = [{
+                        id: 1, 
+                        text: "Finish task1."
+                    },{
+                        id: 2, 
+                        text: "Finish task2."
+                    },{
+                        id: 3, 
+                        text: "Finish task3."
+                    }];
+
+                    return { todos: items };
+                }, 
+                methods: {
+                    add: function(){
+                        this.todos.push({ id: 5, text: "Finish task5."})
+                    }
+                }
+            });
+
+            var app2 = new Vue({
+                el: "#AppIf",
+                data: function() {
+                    return {
+                        show: true,
+                        message: "Now you can see me"
+                    }
+                }
+            })
+
+            var app1 = new Vue({
+                el: "#App-1",
+                data: function() {
+                    var st = { fontSize: "20px"};
+                    var msg = "Hello world!";
+                    return {
+                        message: msg,
+                        style: st
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

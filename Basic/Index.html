@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="Scripts/vue.js"></script>
+    <script src="../Scripts/vue.js"></script>
     <link href="Index.css" rel="stylesheet"/>
     <meta charset="utf-8" />
     <title>Vue Learning - 1</title>
@@ -12,12 +12,17 @@
         {{ message }}
     </div>
 
+    <!-- 
+        v-bind:title 
+        v-bind:style
+    -->
     <div id="app-2">
         <span v-bind:title="message" v-bind:style="{fontSize: fontSize + 'px'}">
             鼠标悬停几秒查看绑定的动态信息
         </span>
     </div>
 
+    <!-- v-bind:class -->
     <div id="app-3" v-bind:class="classObject">
         {{ message }}
     </div>
