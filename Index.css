@@ -1,0 +1,21 @@
+#app {
+     font-style: italic;
+     font-size: 20px;
+     font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+
+.red {
+    color: red;
+    font-style: italic;
+}
+
+.yellow {
+    color: yellow;
+    background-color: black;
+    font-style: bold;
+}
+
+.green {
+    color: green;
+    font-style: normal
+}
