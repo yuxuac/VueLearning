@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+</head>
+<body>
+    <div id="app1">
+        Name: <input type="text" v-model="name"/> <br />
+        Age: <input type="text" v-model="age"/> <br />
+        gender: <input type="text" v-model="gender"/> <br />
+        <button @click="Insert">Insert</button>
+        <ul>
+            <!-- v-for with index -->
+            <li v-for="(stu, index) in students">
+                <!-- v-for for object -->
+                <span v-for="val in stu">
+                        * {{ val }}
+                </span>
+                <br />
+                <!-- v-for for object with key -->
+                <span v-for="(val, key) in stu">
+                    * {{ key }} : {{ val }}
+                </span>
+                <br />
+                <!-- v-for for object with key and index-->
+                <span v-for="(val, key, ind) in stu">
+                    {{ ind }} . {{ key }} : {{ val }}
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: "#app1",
+            data: {
+                name:"",
+                age: 0,
+                gender: "",
+
+                students: [ 
+                    {
+                        name: "张三",
+                        age: 15,
+                        gender: "男"
+                    },
+                    {
+                        name: "李斯",
+                        age: 23,
+                        gender: "女"
+                    },
+                    {
+                        name: "Benjamin",
+                        age: 20,
+                        gender: "女"
+                    }
+                ]
+            },
+            methods: {
+                Insert: function() {
+                    this.students.push({
+                        name: this.name,
+                        age: this.age,
+                        gender: this.gender
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+</html>

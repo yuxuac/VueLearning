@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue day2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+    <style>
+        .red {
+            background-color: red;
+            font-size: 30px
+        }
+        
+        .blue {
+            background-color: blue;
+            font-size: 20px;
+            color:ivory;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello world</h1>
+
+    <!-- click times -->
+    <div id="app1">
+        {{ message + ": " + clickTimes + " times"}}
+        <button v-on:click="click" disabled=true>Click Me</button>
+        <br />
+
+        {{ rawHtml }}
+        <br />
+        Raw: <span v-html="rawHtml"></span>
+    </div>
+
+    <br />
+    <!-- Binding -->
+    <div id="app2">
+        <button @click="clickMethod">{{ btnText }}</button><br />
+        <p v-if="visiable">{{ message }}</p>
+        <p>{{ reversedMessage }}</p>
+    </div>
+
+    <br />
+
+    <!-- Binding class -->
+    <div id="app3">
+        <button @click="changeClass">Click me</button>
+        <div v-bind:class="app3Class">Hello world.</div>
+    </div>
+    <br />
+
+    <!-- v-if -->
+    <div id="app4">
+        <h1 v-if="ok">Yes</h1>
+        <h1 v-else>No</h1>
+        <button @click="click">Click</button>
+    </div>
+
+    <div id="app5">
+        <div v-if="type === 'A'">
+            A
+        </div>
+        <!-- v-else-if -->
+        <div v-else-if="type === 'B'">
+            B
+        </div>
+        <div v-else-if="type === 'C'">
+            C
+        </div>
+         <!-- v-else -->
+        <div v-else>
+            Not A/B/C
+        </div>
+    </div>
+
+    <!-- v-for -->
+    <div id="app6">
+        
+    </div>
+    <!-- Vue code starts here -->
+    <script>
+        var vm6 = new Vue({
+            el: "#app6"
+        });
+
+        var vm5 = new Vue({
+            el: "#app5",
+            data: {
+                type: 'A'
+            }
+        });
+
+        var vm4 = new Vue({
+            el: "#app4",
+            data: {
+                ok: true
+            },
+            methods: {
+                click: function() {
+                    if (this.ok)
+                        this.ok = false;
+                    else 
+                        this.ok = true;
+                }
+            }
+        });
+
+        var vm3 = new Vue({
+            el: "#app3",
+            data: {
+                flag: true,
+                app3Class: 'red'
+            },
+            methods: {
+                changeClass: function() {
+                    console.log(this.flag);
+                    if(this.flag) {
+                        this.app3Class = 'blue'
+                        this.flag = false;
+                    } else {
+                        this.app3Class = 'red'
+                        this.flag = true;
+                    }
+                }
+            }
+        });
+
+        var vm2 = new Vue({
+            el: "#app2",
+            data: {
+                btnText: "Hide",
+                visiable: true,
+                message: "Now you can see me."
+            },
+            methods: {
+                clickMethod: function() {
+                    if(this.visiable == true) {
+                        this.btnText = "Show";
+                        this.visiable = false;
+                        this.message = "Hided";
+                    } else {
+                        this.btnText = "Hide";
+                        this.visiable = true;
+                        this.message = "Now you can see me.";
+                    }
+                }
+            },
+            computed: {
+                reversedMessage: function(){
+                    return this.message.split('').reverse().join('');
+                }
+            }
+        })
+
+        var initialData = {
+            message: "You clicked", 
+            clickTimes: 0,
+            rawHtml: `<span style="background-color: yellow"> Hello </span>`
+        };
+
+        var vm = new Vue({
+            el: "#app1",
+            data: initialData,
+            methods:{
+                click: function(){
+                    this.clickTimes++;
+                }
+            },
+            created: function(){
+                console.log("#app1 created:" + this.message)
+            }
+        });
+    </script>
+</body>
+</html>

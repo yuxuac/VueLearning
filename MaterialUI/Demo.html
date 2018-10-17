@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+    
+    <style>
+      #app {
+        margin: 20px;
+      }
+    .md-layout-item {
+        height: 40px;
+        margin: 5px;
+        background-color:lightgreen;
+        text-align: center;
+        line-height: 40px;
+    }
+
+    .md-layout-item:after {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: md-get-palette-color(green, 200);
+        content: " ";
+    }
+
+          </style>
+  </head>
+
+  <body>
+    <div id="app" class="md-layout">
+        <div class="md-layout-item md-size-30 md-elevation-5"><span style="line-height:40px;">AA</span></div>
+        <div class="md-layout-item md-elevation-10">BB</div>
+        <div class="md-layout-item md-size-30 md-elevation-15">CC</div>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material@beta"></script>
+    <script>
+      Vue.use(VueMaterial.default)
+
+      new Vue({
+        el: '#app'
+      })
+    </script>
+    
+  </body>
+</html>
