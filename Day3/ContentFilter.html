@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Content filter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+</head>
+
+<body>
+    <div id="app1">
+        <input v-model="searchKey" v-model.trim="searchKey" type="text" />
+        <button @click="add">Add</button>
+        <button @click="clear">Clear</button>
+        
+        <!-- <h2 v-for="item in filteredItems" :key="item.id">
+            {{ item.id }} - {{ item.name }} 完成:<input v-model="item.isFinish" type="checkbox">
+        </h2> -->
+
+        <to-do v-for="item in items"
+               v-bind:key="item.id"
+               v-bind:id="item.id"
+               v-bind:name="item.name"
+               v-bind:value="item.value"
+               v-model="item.value">
+        </to-do>
+
+    </div>
+    <script>
+        Vue.component('to-do',{
+            props:['id', 'name', 'value'],
+            template:`
+            <h2>
+                {{ id }} - {{ name }} - 完成:{{ value }} <input type="checkbox" :value="value" @change="$emit('change', $event.target.value)" />
+            </h2>
+            `
+        });
+
+        var vm = new Vue({
+            el: "#app1",
+            data: {
+                searchKey: "",
+                items: [{
+                    id: 1,
+                    name: "Task1",
+                    isfinish: false
+                },
+                {
+                    id: 2,
+                    name: "Task2",
+                    isfinish: false
+                }]
+            },
+            computed: {
+                filteredItems: function () {
+                    var sk = this.searchKey;
+                    if (sk) {
+                        return this.items.filter(function (row) {
+                            return Object.keys(row).some(function (key) {
+                                return String(row[key]).toLowerCase().indexOf(sk) > -1
+                            })
+                        })
+                    } else {
+                        return this.items;
+                    }
+                }
+            },
+            methods: {
+                add: function () {
+                    var sk = this.searchKey;
+                    if (this.searchKey) {
+                        var cnt = this.items.filter(function (item) {
+                            return item.name.trim() === sk.trim();
+                        }).length;
+
+                        if (cnt <= 0) {
+                            var maxID = 0;
+                            
+                            var idArray = this.items.forEach(function (item) {
+                                if (item.id > maxID)
+                                    maxID = item.id;
+                            });
+
+                            if (maxID) {
+                                this.items.push({
+                                    id: maxID + 1,
+                                    name: sk,
+                                    isfinish: false
+                                })
+                                this.searchKey = "";
+                            }
+                        }
+                    }
+                    else {
+                        console.error("nothing to add")
+                    }
+                },
+                clear: function(){
+                    this.items = this.items.filter(function(item){
+                        return item.isfinish === false;
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

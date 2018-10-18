@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Define component</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+</head>
+
+<body>
+    <div id="app1">
+        <click-counter>1</click-counter>
+        <click-counter>2</click-counter>
+    </div>
+    <div id="app2">
+        <search-input v-model="searchTxt"></search-input>
+        <input type="checkbox">
+    </div>
+    <script>
+        Vue.component('search-input',{
+            props:["value"],
+            template: `
+                <input
+                    v-bind:value="value"
+                    v-on:input = "$emit('input', $event.target.value)">
+            `
+        });
+
+        var vm2= new Vue({
+            el: "#app2",
+            data: function(){
+                return {
+                    searchTxt: ""
+                }
+            }
+        })
+
+        Vue.component('click-counter', {
+            data: function () {
+                return {
+                    count: 0
+                }
+            },
+            template: `<button @click="count++">You clicked me {{ count }} times.</button>`
+        });
+
+        var vm1 = new Vue({
+            el: "#app1"
+        })
+
+
+
+    </script>
+</body>
+
+</html>
