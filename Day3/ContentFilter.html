@@ -11,29 +11,22 @@
 
 <body>
     <div id="app1">
-        <input v-model="searchKey" v-model.trim="searchKey" type="text" />
+        <input v-model="searchKey" v-model.trim="searchKey" type="text" v-on:keyup.enter="add" />
         <button @click="add">Add</button>
         <button @click="clear">Clear</button>
-        
-        <!-- <h2 v-for="item in filteredItems" :key="item.id">
-            {{ item.id }} - {{ item.name }} 完成:<input v-model="item.isFinish" type="checkbox">
-        </h2> -->
 
-        <to-do v-for="item in items"
+        <to-do v-for="item in filteredItems"
                v-bind:key="item.id"
-               v-bind:id="item.id"
-               v-bind:name="item.name"
-               v-bind:value="item.value"
-               v-model="item.value">
+               v-bind:item="item">
         </to-do>
 
     </div>
     <script>
         Vue.component('to-do',{
-            props:['id', 'name', 'value'],
+            props:['item'],
             template:`
             <h2>
-                {{ id }} - {{ name }} - 完成:{{ value }} <input type="checkbox" :value="value" @change="$emit('change', $event.target.value)" />
+                {{ item.id }} - {{ item.name }} - 完成:{{ item.isfinish }} <input type="checkbox" v-model="item.isfinish" />
             </h2>
             `
         });
@@ -101,6 +94,9 @@
                     this.items = this.items.filter(function(item){
                         return item.isfinish === false;
                     })
+                },
+                change: function($event) {
+                    console.log('change called.');
                 }
             }
         });

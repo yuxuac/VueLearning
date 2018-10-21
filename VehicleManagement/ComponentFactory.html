@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Create components</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+    <style>
+
+        body {
+            font-family: 'Microsoft YaHei';
+        }
+
+        .item-div {
+            display: inline-block; 
+            width: 100%;
+            margin: 2px;
+            background-color:burlywood;
+            vertical-align: top; 
+        }
+
+        .item-div:hover {
+            background-color:lightgrey;
+        }
+
+        .item-sub-div {
+            
+            vertical-align: top; 
+            margin: 4px;
+        }
+
+        .item-block {
+            display: inline-block; 
+            border: solid black 1px; 
+            height: 18px; 
+            width: 18px; 
+            margin-top: 4px; 
+            margin-left: 4px
+        }
+
+        .item-selected {
+            background-color:gold; 
+        }
+
+        .item-content {
+            display: inline-block; 
+           
+            vertical-align: top; 
+            line-height: 20px;
+            margin: 4px;
+        }
+
+        .item-input * {
+            vertical-align: top; 
+            margin: 4px;
+        }
+
+        .right {
+            float: right;
+            margin-right: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app1" style="width:33%;">
+        <span style="font-size: 1.5em">{{ title }}</span><br /><br />
+        <input type="text" v-model.trim="searchkey" >
+        <button>增加</button>
+        <button>编辑(多选)</button><br />
+        <span>--------------------------------------------------------</span>
+        <vehicle-item v-for="item in filtereditems" v-bind:item="item" :key="item.id"></vehicle-item>
+    </div>
+    
+    <script>
+        Vue.component('vehicle-item', {
+            props:['item'],
+            template:`
+            <div class="item-div" v-bind:class="item.selectmode" @click="select">
+                <div class="item-sub-div" v-if="item.editmode">
+                    <span>{{ item.id }}-</span><input type="text" v-model="item.name" />
+                    <button class="right" @click="click">保存</button>
+                </div>
+                <div class="item-sub-div" v-else>
+                    <span>{{ item.id }}-{{ item.name }}</span>
+                    <button class="right" @click="click">编辑</button>
+                </div>
+            </div>
+            `,
+            methods: {
+                click: function(event) {
+                    this.item.editmode = !this.item.editmode;
+                },
+                select: function(event) {
+                    var itemCache = this.item;
+
+                    if(itemCache.selectmode)
+                        itemCache.selectmode = "";
+                    else
+                        itemCache.selectmode = "item-selected";
+                    
+                    this.item = itemCache;
+                }
+            }
+        });
+
+        var vm = new Vue({
+            el: "#app1",
+            data: function() {
+                return {
+                    items: [{
+                        id: 1,
+                        name: "奥迪",
+                        editmode: false,
+                        selectmode: ""
+                    },{
+                        id: 2,
+                        name: "奔驰",
+                        editmode: false,
+                        selectmode: ""
+                    },{
+                        id: 3,
+                        name: "宝马",
+                        editmode: false,
+                        selectmode: ""
+                    }],
+                    searchkey:"",
+                    title: "品牌"
+                }
+            },
+            computed:{
+                filtereditems: function() {
+                    var sk = this.searchkey;
+                    if(sk) {
+                        return this.items.filter(function(row){
+                            return Object.keys(row).some(function(key){
+                                return String(row[key]).toLowerCase().indexOf(sk) > -1;
+                            })
+                        })
+                    } else {
+                        return this.items;
+                    }
+                },
+                selecteditems: function() {
+                    return this.items.filter(function(row){
+                            return row.selectmode;
+                        })
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
