@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dialog demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+    <script src="../Scripts/vuedals.js"></script>
+</head>
+<body>
+
+    <div id="app"></div>
+    
+    <script>
+
+        Vue.use(Vuedals.default);
+
+        const EditVB = {
+            name: 'edit-vehiclebrand',
+            props: ['item'],
+            template: `
+                <div><span>{{ item.id }}-</span><input type="text" v-model="item.name" /></div>
+            `
+        }
+
+        // Sample component
+        const VBItem = {
+            name: 'sample-component',
+            props: ['item'],
+            methods: {
+                openNewModal() {
+                    this.$vuedals.open({
+                        title: '修改车型信息',
+                        component: EditVB,
+                        props:{
+                            item: this.item
+                        }
+                    })
+                }
+            },
+
+            template: `
+                <div>
+                    {{ item.id }} - {{ item.name }} <button @click="openNewModal()">编辑</button>
+                </div>`
+        }
+
+        // Our app
+        var vm = new Vue({
+            el: '#app',
+            components: {
+                vuedals: Vuedals.Component,
+                vbitem: VBItem,
+            },
+            data: function() {
+                return {
+                    item: {
+                        id: 1,
+                        name: "宝宝"
+                    }
+                }
+            },
+            template: `<div>
+                <vbitem v-bind:item="item" :key="item.id"></vbitem>
+                <vuedals></vuedals>
+            </div>`,
+            
+        });
+    </script>
+</body>
+</html>
