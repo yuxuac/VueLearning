@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -50,65 +51,176 @@
 
     </style>
 </head>
+
 <body>
-    <div id="app1" style="width:33%;">
-        <span style="font-size: 1.5em">{{ title }}</span><br /><br />
-        <input type="text" v-model.trim="searchkey" >
-        <button>增加</button>
-        <button>编辑(多选)</button>
-        <button>取消选择</button><br />
-        <span>--------------------------------------------------------</span>
-        <vehicle-item v-for="item in filtereditems" v-bind:item="item" :key="item.id"></vehicle-item>
+    
+    <div id="app1">
+        <div style="width:33%; display: inline-block; vertical-align:top;">
+            <span style="font-size: 1.5em">{{ title_brand }}</span><br /><br />
+            <input type="text" v-model.trim="searchkey_brand">
+            <button>增加</button>
+            <button>编辑(多选)</button>
+            <button @click="clearBS">取消选择</button><br />
+            <span>--------------------------------------------------------</span>
+            <vehiclebrand-item v-for="item in filteredbrands" v-bind:item="item" :key="item.id" v-on:selectbrand="onselectbrand"></vehiclebrand-item>
+        </div>
+        &nbsp;
+        <div style="width:33%; display: inline-block;">
+            <span style="font-size: 1.5em">{{ title_model }}</span><br /><br />
+            <input type="text" v-model.trim="searchkey_model">
+            <button>增加</button>
+            <button>编辑(多选)</button>
+            <button @click="clearMS">取消选择</button><br />
+            <span>--------------------------------------------------------</span>
+            <vehiclemodel-item v-for="item in filteredmodels" v-bind:item="item" :key="item.id"></vehiclemodel-item>
+        </div>
         <vuedals></vuedals>
     </div>
-    
+
+
     <script>
+
+        // 支持Recompute ==》开始
+        Vue.mixin({
+            data: () => ({
+                _recomputed: Object.create(null)
+            }),
+            created() {
+                const watchers = this._computedWatchers
+                
+                if (!watchers) return
+                
+                this.$recompute = (key) => {
+                    const { _recomputed } = this.$data
+                    this.$set(_recomputed, key, !_recomputed[key])
+                }
+                
+                for (const key in watchers) {
+                    const watcher = watchers[key]
+                    watcher.getter = createRecomputable(key, watcher.getter)
+                }
+            }
+        })
+
+        function createRecomputable(key, original) {
+            return (vm) => (vm.$data._recomputed[key], original.call(vm, vm))
+        }
+       // 支持Recompute ==》结束
+
         Vue.use(Vuedals.default);
 
         const EditVB = {
             name: 'edit-vehiclebrand',
             props: ['item'],
             template: `
-                <div><span>{{ item.id }}-</span><input type="text" v-model="item.name" /></div>
+                <div>
+                    <span>{{ item.AutoBrandID }}-</span><input type="text" v-model="item.AutoBrandName" />
+                </div>
             `
         }
 
-        Vue.component('vehicle-item', {
-            props:['item'],
-            template:`
+        const EditVM = {
+            name: 'edit-vehiclemodel',
+            props: ['item'],
+            template: `
+                <div>
+                    <table>
+                        <tr>
+                            <td>{{ item.AutoModelID }}</td>
+                            <td><input type="text" v-model="item.AutoModelName" /></td>
+                        </tr>
+                        <tr>
+                            <td>{{ item.AutoBrandID }}</td>
+                            <!--<td><input type="text" v-model="item.AutoBrandID" /></td>-->
+                        </tr>
+                        <tr>
+                            <td>{{ item.AutoCategoryID }}</td>
+                            <!--<td><input type="text" v-model="item.AutoCategoryName" /></td>-->
+                        </tr>
+                    </table>
+                </div>
+            `
+        }
+
+        Vue.component('vehiclebrand-item', {
+            props: ['item'],
+            template: `
             <div class="item-div" v-bind:class="item.selectmode" @click="select">
                 <div v-if="item.editmode">
-                    <span>{{ item.id }}-</span><input type="text" v-model="item.name" />
+                    <span>{{ item.AutoBrandID }}-</span><input type="text" v-model="item.AutoBrandName" />
                     <button class="right" @click="click" @click.stop>保存</button>
                 </div>
                 <div v-else>
-                    <span>{{ item.id }}-{{ item.name }}</span>
+                    <span>{{ item.AutoBrandID }}-{{ item.AutoBrandName }}</span>
                     <button class="right" @click="click" @click.stop>编辑</button>
                     <button class="right" @click="openNewModal" @click.stop>打开编辑</button>
                 </div>
             </div>
             `,
             methods: {
-                click: function(event) {
+                click: function (event) {
                     this.item.editmode = !this.item.editmode;
                 },
-                select: function(event) {
-                    
+                select: function (event) {
+
                     var itemCache = this.item;
 
-                    if(itemCache.selectmode)
+                    if (itemCache.selectmode)
                         itemCache.selectmode = "";
                     else
                         itemCache.selectmode = "item-selected";
-                    
+
                     this.item = itemCache;
+                    this.$emit('selectbrand');
                 },
                 openNewModal() {
                     console.log("haha");
                     this.$vuedals.open({
-                        title: '修改车型信息',
+                        title: '修改品牌信息',
                         component: EditVB,
-                        props:{
+                        props: {
+                            item: this.item
+                        }
+                    })
+                }
+            }
+        });
+
+        Vue.component('vehiclemodel-item', {
+            props: ['item'],
+            template: `
+            <div class="item-div" v-bind:class="item.selectmode" @click="select">
+                <div v-if="item.editmode">
+                    <span>{{ item.AutoModelID }}-</span><input type="text" v-model="item.AutoModelName" />
+                    <button class="right" @click="click" @click.stop>保存</button>
+                </div>
+                <div v-else>
+                    <span>{{ item.AutoModelID }}-{{ item.AutoModelName }}</span>
+                    <button class="right" @click="click" @click.stop>编辑</button>
+                    <button class="right" @click="openNewModal" @click.stop>打开编辑</button>
+                </div>
+            </div>
+            `,
+            methods: {
+                click: function (event) {
+                    this.item.editmode = !this.item.editmode;
+                },
+                select: function (event) {
+
+                    var itemCache = this.item;
+
+                    if (itemCache.selectmode)
+                        itemCache.selectmode = "";
+                    else
+                        itemCache.selectmode = "item-selected";
+
+                    this.item = itemCache;
+                },
+                openNewModal() {
+                    this.$vuedals.open({
+                        title: '修改车型信息',
+                        component: EditVM,
+                        props: {
                             item: this.item
                         }
                     })
@@ -118,50 +230,163 @@
 
         var vm = new Vue({
             el: "#app1",
-           
-            data: function() {
+
+            data: function () {
                 return {
-                    items: [{
-                        id: 1,
-                        name: "奥迪",
+                    brands: [{
+                        AutoBrandID: 1,
+                        AutoBrandName: "DS",
                         editmode: false,
                         selectmode: ""
-                    },{
-                        id: 2,
-                        name: "奔驰",
+                    }, {
+                        AutoBrandID: 2,
+                        AutoBrandName: "Jeep",
                         editmode: false,
                         selectmode: ""
-                    },{
-                        id: 3,
-                        name: "宝马",
+                    }, {
+                        AutoBrandID: 4,
+                        AutoBrandName: "MINI",
+                        editmode: false,
+                        selectmode: ""
+                    }, {
+                        AutoBrandID: 9,
+                        AutoBrandName: "奥迪",
+                        editmode: false,
+                        selectmode: ""
+                    }, {
+                        AutoBrandID: 12,
+                        AutoBrandName: "宝马",
                         editmode: false,
                         selectmode: ""
                     }],
-                    searchkey:"",
-                    title: "品牌"
+                    models: [
+                        { AutoModelID: "1", AutoModelName: "DS  DS 5LS  1.6T 手自一体 THP160 雅致版", AutoBrandID: "1", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "2", AutoModelName: "DS  DS 5LS  1.6THP 手自一体 THP160 基础版", AutoBrandID: "1", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "3", AutoModelName: "DS  DS 5LS  1.8 手自一体 VTi140 舒适版", AutoBrandID: "1", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "48", AutoModelName: "Jeep  指南者  1.4T 双离合 200T 驭享版", AutoBrandID: "2", AutoCategoryID: "12", editmode: false, selectmode: "" },
+                        { AutoModelID: "49", AutoModelName: "Jeep  指南者  2.4 手自一体 200TS 高性能四驱版", AutoBrandID: "2", AutoCategoryID: "12", editmode: false, selectmode: "" },
+                        { AutoModelID: "84", AutoModelName: "MINI  Cooper Clubman  1.6 手自一体 Cheer", AutoBrandID: "4", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "85", AutoModelName: "MINI  Cooper Clubman  1.6 手自一体 Fun", AutoBrandID: "4", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "132", AutoModelName: "奥迪  A4  1.8T 手动 标准型", AutoBrandID: "9", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "133", AutoModelName: "奥迪  A4  1.8T 无级 标准型", AutoBrandID: "9", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "296", AutoModelName: "宝马  320i  2.0 手自一体 时尚型", AutoBrandID: "12", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                        { AutoModelID: "297", AutoModelName: "宝马  320i  2.0T 手自一体 M运动型", AutoBrandID: "12", AutoCategoryID: "1", editmode: false, selectmode: "" },
+                    ],
+                    searchkey_brand: "",
+                    title_brand: "品牌",
+                    searchkey_model: "",
+                    title_model: "车型",
+                    autoCategories:[{
+                        AutoCategoryID: "1",
+                        AutoCategoryName: "轿车"
+                    }, {
+                        AutoCategoryID: "2",
+                        AutoCategoryName: "客车"
+                    }, {
+                        AutoCategoryID: "3",
+                        AutoCategoryName: "半挂车"
+                    }, {
+                        AutoCategoryID: "4",
+                        AutoCategoryName: "货车"
+                    }, {
+                        AutoCategoryID: "7",
+                        AutoCategoryName: "牵引车"
+                    }, {
+                        AutoCategoryID: "8",
+                        AutoCategoryName: "越野车"
+                    }, {
+                        AutoCategoryID: "9",
+                        AutoCategoryName: "专用车"
+                    }, {
+                        AutoCategoryID: "10",
+                        AutoCategoryName: "自卸车"
+                    }, {
+                        AutoCategoryID: "11",
+                        AutoCategoryName: "MPV"
+                    }, {
+                        AutoCategoryID: "12",
+                        AutoCategoryName: "SUV"
+                    }, {
+                        AutoCategoryID: "19",
+                        AutoCategoryName: "皮卡"
+                    }]
                 }
             },
             components: {
                 vuedals: Vuedals.Component,
             },
-            computed:{
-                filtereditems: function() {
-                    var sk = this.searchkey;
-                    if(sk) {
-                        return this.items.filter(function(row){
-                            return Object.keys(row).some(function(key){
+            computed: {
+                filteredbrands: function () {
+                    var sk = this.searchkey_brand.toLowerCase();
+                    if (sk) {
+                        return this.brands.filter(function (row) {
+                            return Object.keys(row).some(function (key) {
                                 return String(row[key]).toLowerCase().indexOf(sk) > -1;
                             })
                         })
                     } else {
-                        return this.items;
+                        return this.brands;
                     }
                 },
-                selecteditems: function() {
-                    return this.items.filter(function(row){
-                            return row.selectmode;
-                        })
+
+                selectedbrands: function () {
+                    return this.brands.filter(function (row) {
+                        return row.selectmode;
+                    })
+                },
+                selectedmodels: function () {
+                    return this.models.filter(function (row) {
+                        return row.selectmode;
+                    })
+                },
+                filteredmodels: function() {
+                    var sk = this.searchkey_model.toLowerCase();
+                    var tempModels = [];
+                    if (sk) {
+                        tempModels = this.models.filter(function (row) {
+                            return Object.keys(row).some(function (key) {
+                                return String(row[key]).toLowerCase().indexOf(sk) > -1;
+                            })
+                        });
+                    } else {
+                        tempModels = this.models;
+                    }
+                    
+                    // 使用选择的品牌过滤车型
+                    var tempSelectedBrands = this.selectedbrands;
+                    if(typeof(tempSelectedBrands) != 'undefined' &&
+                       tempSelectedBrands.length > 0 &&
+                       tempSelectedBrands) {
+                        tempModels = tempModels.filter(function(row) {
+                            return tempSelectedBrands.some(function(key) {
+                                return key.AutoBrandID == row.AutoBrandID;
+                            });
+                        });
+                    }
+                    return tempModels;
+                },
+            },
+            methods:{
+                clearBS: function() {
+                    this.brands.forEach(function(el){
+                        el.selectmode = "";
+                    })
+                },
+                clearMS: function() {
+                    this.models.forEach(function(el){
+                        el.selectmode = "";
+                    })
+                },
+                onselectbrand: function() {
+                    console.log("onselectbrand");
+                    this.$recompute('filteredmodels');
                 }
+            },
+            watch: {
+                // filteredmodels: function(val, oldVal) {
+                //     console.log(val.count);
+                //     console.log(oldVal.count);
+                // }
             }
         })
     </script>
