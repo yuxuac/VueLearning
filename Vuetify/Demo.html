@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vuetify Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="../Styles/iziToast.min.css" />
+    
+    <script src="../Scripts/iziToast.js"></script>
+    <script src="../Scripts/vue.js"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../Styles/vuetify-v1.3.5.min.css" />
+    <script src="../Scripts/vuetify-v1.3.5.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-content>
+                <v-container>Hello world</v-container>
+                <v-btn color="success">Success</v-btn>
+                <v-btn color="error">Error</v-btn>
+                <v-btn color="warning">Warning</v-btn>
+                <v-btn color="info">Info</v-btn>
+            </v-content>
+        </v-app>
+    </div>
+    <script>
+        new Vue({ el: '#app' })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Notification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css"  href="../Styles/iziToast.css" />
+    <script src="../Scripts/iziToast.js"></script>
+</head>
+<body>
+    <button onclick="click1()">Click</button>
+    <script>
+        function click1() {
+            iziToast.success({
+                title: 'Hey',
+                message: 'What would you like to add?fdjsklafjdskl;ajfieowjafio;ejwiaof;jeio;asjfioe;jaifo;',
+                position: 'topRight'
+            });
+            console.log("hello");
+        }
+    </script>
+</body>
+</html>

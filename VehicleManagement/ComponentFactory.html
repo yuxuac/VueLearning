@@ -8,6 +8,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="../Scripts/vue.js"></script>
     <script src="../Scripts/vuedals.js"></script>
+    <script src="../Scripts/vue-select.js"></script>
+    <link rel="stylesheet" type="text/css"  href="../Styles/iziToast.css" />
+    <script src="../Scripts/iziToast.js"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../Styles/pure-min.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="../Styles/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="../Styles/grids-responsive-min.css">
+    <!--<![endif]-->
+    
     <style>
 
         body * {
@@ -15,12 +27,18 @@
             font-size: 1em;
             color:black
         }
+        
+        #app1 {
+            margin-left: auto; 
+            margin-right: auto; 
+            margin-top:30px;
+            width:80%; 
+        }
 
         .item-div {
             display: inline-block; 
             width: 100%;
             margin: 2px;
-            background-color:darkgray;
             vertical-align:middle; 
         }
 
@@ -41,7 +59,7 @@
         }
 
         .item-selected {
-            background-color:gold; 
+            background-color:darkgrey; 
         }
 
         .right {
@@ -49,37 +67,64 @@
             margin-right: 8px;
         }
 
+        /* dialog */
+        .dialog table {
+            width: 100%
+        }
+
+        .dialog table tr {
+            height: 42px;
+        }
+
+        .dialog .footer {
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+            padding-top: 8px;
+        }
+
+        /* pure css below */
+        .l-box {
+            margin: 1em;
+            border-radius: 15px;
+            -moz-border-radius: 15px;
+            padding: 1em;
+            border:black solid 1px;
+        } 
+
     </style>
 </head>
 
 <body>
-    
-    <div id="app1">
-        <div style="width:33%; display: inline-block; vertical-align:top;">
-            <span style="font-size: 1.5em">{{ title_brand }}</span><br /><br />
-            <input type="text" v-model.trim="searchkey_brand">
-            <button>增加</button>
-            <button>编辑(多选)</button>
-            <button @click="clearBS">取消选择</button><br />
-            <span>--------------------------------------------------------</span>
-            <vehiclebrand-item v-for="item in filteredbrands" v-bind:item="item" :key="item.id" v-on:selectbrand="onselectbrand"></vehiclebrand-item>
-        </div>
-        &nbsp;
-        <div style="width:33%; display: inline-block;">
-            <span style="font-size: 1.5em">{{ title_model }}</span><br /><br />
-            <input type="text" v-model.trim="searchkey_model">
-            <button>增加</button>
-            <button>编辑(多选)</button>
-            <button @click="clearMS">取消选择</button><br />
-            <span>--------------------------------------------------------</span>
-            <vehiclemodel-item v-for="item in filteredmodels" v-bind:item="item" :key="item.id"></vehiclemodel-item>
+
+    <div id="app1" class="pure-g">
+        <div class="pure-u-2-5">
+            <div class="l-box">
+                <span style="font-size: 1.5em">{{ title_brand }}</span><br /><br />
+                <input type="text" v-model.trim="searchkey_brand">
+                <button>增加</button>
+                <button>编辑(多选)</button>
+                <button @click="clearBS">取消选择</button><br />
+                <br />
+                <vehiclebrand-item v-for="item in filteredbrands" v-bind:item="item" :key="item.id" v-on:selectbrand="onselectbrand"></vehiclebrand-item>
+            </div>
+         </div>
+        <div class="pure-u-3-5">
+            <div class="l-box">
+                <span style="font-size: 1.5em">{{ title_model }}</span><br /><br />
+                <input type="text" v-model.trim="searchkey_model">
+                <button>增加</button>
+                <button>编辑(多选)</button>
+                <button @click="clearMS">取消选择</button>
+                <br />
+                <br />
+                <vehiclemodel-item v-for="item in filteredmodels" v-bind:item="item" :key="item.id"></vehiclemodel-item>
+            </div>
         </div>
         <vuedals></vuedals>
     </div>
 
 
     <script>
-
         // 支持Recompute ==》开始
         Vue.mixin({
             data: () => ({
@@ -87,59 +132,214 @@
             }),
             created() {
                 const watchers = this._computedWatchers
-                
+
                 if (!watchers) return
-                
+
                 this.$recompute = (key) => {
                     const { _recomputed } = this.$data
                     this.$set(_recomputed, key, !_recomputed[key])
                 }
-                
+
                 for (const key in watchers) {
                     const watcher = watchers[key]
                     watcher.getter = createRecomputable(key, watcher.getter)
                 }
             }
         })
-
         function createRecomputable(key, original) {
             return (vm) => (vm.$data._recomputed[key], original.call(vm, vm))
         }
-       // 支持Recompute ==》结束
+        // 支持Recompute ==》结束
 
+        // 品牌
+        const vehicleBrands = [
+            {
+                AutoBrandID: 1,
+                AutoBrandName: "DS",
+                editmode: false,
+                selectmode: ""
+            }, {
+                AutoBrandID: 2,
+                AutoBrandName: "Jeep",
+                editmode: false,
+                selectmode: ""
+            }, {
+                AutoBrandID: 4,
+                AutoBrandName: "MINI",
+                editmode: false,
+                selectmode: ""
+            }, {
+                AutoBrandID: 9,
+                AutoBrandName: "奥迪",
+                editmode: false,
+                selectmode: ""
+            }, {
+                AutoBrandID: 12,
+                AutoBrandName: "宝马",
+                editmode: false,
+                selectmode: ""
+            }];
+
+        // 车辆类型
+        const autoCategories = [
+            {
+                AutoCategoryID: "1",
+                AutoCategoryName: "轿车"
+            }, {
+                AutoCategoryID: "2",
+                AutoCategoryName: "客车"
+            }, {
+                AutoCategoryID: "3",
+                AutoCategoryName: "半挂车"
+            }, {
+                AutoCategoryID: "4",
+                AutoCategoryName: "货车"
+            }, {
+                AutoCategoryID: "7",
+                AutoCategoryName: "牵引车"
+            }, {
+                AutoCategoryID: "8",
+                AutoCategoryName: "越野车"
+            }, {
+                AutoCategoryID: "9",
+                AutoCategoryName: "专用车"
+            }, {
+                AutoCategoryID: "10",
+                AutoCategoryName: "自卸车"
+            }, {
+                AutoCategoryID: "11",
+                AutoCategoryName: "MPV"
+            }, {
+                AutoCategoryID: "12",
+                AutoCategoryName: "SUV"
+            }, {
+                AutoCategoryID: "19",
+                AutoCategoryName: "皮卡"
+            }]
+
+        // 注册Dialog
         Vue.use(Vuedals.default);
 
+        // 注册v-select
+        Vue.component('v-select', VueSelect.VueSelect);
+
+        // 编辑品牌
         const EditVB = {
             name: 'edit-vehiclebrand',
             props: ['item'],
             template: `
-                <div>
-                    <span>{{ item.AutoBrandID }}-</span><input type="text" v-model="item.AutoBrandName" />
+                <div class="dialog">
+                    <table>
+                        <tr>
+                            <td>品牌ID</td>
+                            <td>{{ item.AutoBrandID }}</td>
+                        </tr>
+                        <tr>
+                            <td>品牌</td>
+                            <td><input type="text" v-model="item.AutoBrandName" /></td>
+                        </tr>
+                    </table>
+                    <div class="footer">
+                        <button class="right" @click="save">保存</button>&nbsp;
+                        <button class="right" @click="cancel">取消</button>
+                    </div>
                 </div>
-            `
+            `,
+            methods: {
+                save: function() {
+                    console.log("save clicked");
+                },
+                cancel: function() {
+                    console.log("cancel clicked");
+                }
+            }
         }
 
+        // 编辑车型
         const EditVM = {
             name: 'edit-vehiclemodel',
             props: ['item'],
+            data: function () {
+                var ti = JSON.parse(JSON.stringify(this.item));
+                return {
+                    brands: vehicleBrands,
+                    categories: autoCategories,
+                    tempItem: ti
+                }
+            },
+            computed: {
+                selectedbrand: {
+                    get: function () {
+                        var autobrandid = this.tempItem.AutoBrandID;
+                        var chosenBrands = this.brands.filter(function (v) {
+                            return v.AutoBrandID == autobrandid;
+                        });
+
+                        if (chosenBrands && chosenBrands.length > 0)
+                            return chosenBrands[0];
+                        else
+                            return null;
+                    },
+                    set: function (v) {
+                        this.tempItem.AutoBrandID = v.AutoBrandID;
+                    }
+                },
+                selectedcategory: {
+                    get: function () {
+                        var categoryid = this.tempItem.AutoCategoryID;
+                        var chosenCategories = this.categories.filter(function(v){
+                            return v.AutoCategoryID == categoryid;
+                        });
+
+                        if (chosenCategories && chosenCategories.length > 0)
+                            return chosenCategories[0];
+                        else
+                            return null;
+                    },
+                    set: function (v) {
+                        this.tempItem.AutoCategoryID = v.AutoCategoryID;
+                    }
+                }
+            },
             template: `
-                <div>
+                <div class="dialog">
                     <table>
                         <tr>
+                            <td>车型ID</td>
                             <td>{{ item.AutoModelID }}</td>
-                            <td><input type="text" v-model="item.AutoModelName" /></td>
                         </tr>
                         <tr>
-                            <td>{{ item.AutoBrandID }}</td>
-                            <!--<td><input type="text" v-model="item.AutoBrandID" /></td>-->
+                            <td>车型</td>
+                            <td><input type="text" style="width:99%" v-model="item.AutoModelName" /></td>
                         </tr>
                         <tr>
-                            <td>{{ item.AutoCategoryID }}</td>
-                            <!--<td><input type="text" v-model="item.AutoCategoryName" /></td>-->
+                            <td>品牌</td>
+                            <td>
+                                <v-select v-model="selectedbrand" label="AutoBrandName" :options="brands"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>车辆类型</td>
+                            <td>
+                                <v-select v-model="selectedcategory" label="AutoCategoryName" :options="categories" />
+                            </td>
                         </tr>
                     </table>
+                    
+                    <div class="footer">
+                        <button class="right" @click="save">保存</button>&nbsp;
+                        <button class="right" @click="cancel">取消</button>
+                    </div>
                 </div>
-            `
+            `,
+            methods: {
+                save: function() {
+                    console.log("save clicked");
+                },
+                cancel: function() {
+                    console.log("cancel clicked");
+                }
+            }
         }
 
         Vue.component('vehiclebrand-item', {
@@ -162,7 +362,6 @@
                     this.item.editmode = !this.item.editmode;
                 },
                 select: function (event) {
-
                     var itemCache = this.item;
 
                     if (itemCache.selectmode)
@@ -174,7 +373,6 @@
                     this.$emit('selectbrand');
                 },
                 openNewModal() {
-                    console.log("haha");
                     this.$vuedals.open({
                         title: '修改品牌信息',
                         component: EditVB,
@@ -233,32 +431,7 @@
 
             data: function () {
                 return {
-                    brands: [{
-                        AutoBrandID: 1,
-                        AutoBrandName: "DS",
-                        editmode: false,
-                        selectmode: ""
-                    }, {
-                        AutoBrandID: 2,
-                        AutoBrandName: "Jeep",
-                        editmode: false,
-                        selectmode: ""
-                    }, {
-                        AutoBrandID: 4,
-                        AutoBrandName: "MINI",
-                        editmode: false,
-                        selectmode: ""
-                    }, {
-                        AutoBrandID: 9,
-                        AutoBrandName: "奥迪",
-                        editmode: false,
-                        selectmode: ""
-                    }, {
-                        AutoBrandID: 12,
-                        AutoBrandName: "宝马",
-                        editmode: false,
-                        selectmode: ""
-                    }],
+                    brands: vehicleBrands,
                     models: [
                         { AutoModelID: "1", AutoModelName: "DS  DS 5LS  1.6T 手自一体 THP160 雅致版", AutoBrandID: "1", AutoCategoryID: "1", editmode: false, selectmode: "" },
                         { AutoModelID: "2", AutoModelName: "DS  DS 5LS  1.6THP 手自一体 THP160 基础版", AutoBrandID: "1", AutoCategoryID: "1", editmode: false, selectmode: "" },
@@ -276,40 +449,7 @@
                     title_brand: "品牌",
                     searchkey_model: "",
                     title_model: "车型",
-                    autoCategories:[{
-                        AutoCategoryID: "1",
-                        AutoCategoryName: "轿车"
-                    }, {
-                        AutoCategoryID: "2",
-                        AutoCategoryName: "客车"
-                    }, {
-                        AutoCategoryID: "3",
-                        AutoCategoryName: "半挂车"
-                    }, {
-                        AutoCategoryID: "4",
-                        AutoCategoryName: "货车"
-                    }, {
-                        AutoCategoryID: "7",
-                        AutoCategoryName: "牵引车"
-                    }, {
-                        AutoCategoryID: "8",
-                        AutoCategoryName: "越野车"
-                    }, {
-                        AutoCategoryID: "9",
-                        AutoCategoryName: "专用车"
-                    }, {
-                        AutoCategoryID: "10",
-                        AutoCategoryName: "自卸车"
-                    }, {
-                        AutoCategoryID: "11",
-                        AutoCategoryName: "MPV"
-                    }, {
-                        AutoCategoryID: "12",
-                        AutoCategoryName: "SUV"
-                    }, {
-                        AutoCategoryID: "19",
-                        AutoCategoryName: "皮卡"
-                    }]
+                    autoCategories: autoCategories
                 }
             },
             components: {
@@ -339,7 +479,7 @@
                         return row.selectmode;
                     })
                 },
-                filteredmodels: function() {
+                filteredmodels: function () {
                     var sk = this.searchkey_model.toLowerCase();
                     var tempModels = [];
                     if (sk) {
@@ -351,14 +491,14 @@
                     } else {
                         tempModels = this.models;
                     }
-                    
+
                     // 使用选择的品牌过滤车型
                     var tempSelectedBrands = this.selectedbrands;
-                    if(typeof(tempSelectedBrands) != 'undefined' &&
-                       tempSelectedBrands.length > 0 &&
-                       tempSelectedBrands) {
-                        tempModels = tempModels.filter(function(row) {
-                            return tempSelectedBrands.some(function(key) {
+                    if (typeof (tempSelectedBrands) != 'undefined' &&
+                        tempSelectedBrands.length > 0 &&
+                        tempSelectedBrands) {
+                        tempModels = tempModels.filter(function (row) {
+                            return tempSelectedBrands.some(function (key) {
                                 return key.AutoBrandID == row.AutoBrandID;
                             });
                         });
@@ -366,29 +506,35 @@
                     return tempModels;
                 },
             },
-            methods:{
-                clearBS: function() {
-                    this.brands.forEach(function(el){
+            methods: {
+                clearBS: function () {
+                    this.brands.forEach(function (el) {
                         el.selectmode = "";
                     })
+
+                    iziToast.success({
+                        title: '通知',
+                        message: '已经取消选择所有品牌。',
+                        position: 'topRight'
+                    });
                 },
-                clearMS: function() {
-                    this.models.forEach(function(el){
+                clearMS: function () {
+                    this.models.forEach(function (el) {
                         el.selectmode = "";
                     })
+                    iziToast.success({
+                        title: '通知',
+                        message: '已经取消选择所有车型。',
+                        position: 'topRight'
+                    });
                 },
-                onselectbrand: function() {
+                onselectbrand: function () {
                     console.log("onselectbrand");
                     this.$recompute('filteredmodels');
                 }
-            },
-            watch: {
-                // filteredmodels: function(val, oldVal) {
-                //     console.log(val.count);
-                //     console.log(oldVal.count);
-                // }
             }
         })
+
     </script>
 </body>
 

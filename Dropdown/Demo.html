@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Select control demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/vue.js"></script>
+    <script src="../Scripts/vue-select.js"></script>
+</head>
+<body>
+    <div id="app1">
+        <v-select label="label" v-bind:options="category"></v-select>
+    </div>
+    <script>
+        Vue.component('v-select', VueSelect.VueSelect);
+        
+        var vm = new Vue({
+            el: "#app1",
+            data: function() {
+                return {
+                    category: [{ label: "轿车", value: 1 },
+                    { label: "货车", value: 2 },
+                    { label: "客车", value: 3 },
+                    { label: "自卸车", value: 4 }]
+                }
+                
+            }
+        });
+    </script>
+</body>
+</html>
